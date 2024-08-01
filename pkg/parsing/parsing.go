@@ -9,6 +9,6 @@ type TerraformLock struct {
 type Provider struct {
 	Address     string   `hcl:"address,label"`
 	Version     string   `hcl:"version"`
-	Constraints string   `hcl:"constraints"`
+	Constraints string   `hcl:"constraints,optional"`
 	Hashes      []string `hcl:"hashes"`
 }

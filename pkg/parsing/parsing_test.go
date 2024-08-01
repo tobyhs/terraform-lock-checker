@@ -7,13 +7,18 @@ import (
 	"github.com/hashicorp/hcl/v2/hclsimple"
 )
 
-func TestParsing(t *testing.T) {
+func checkLock(t *testing.T, filePath string, wanted *TerraformLock) {
 	var got TerraformLock
-	err := hclsimple.DecodeFile("../../test/data/.terraform.lock.hcl", nil, &got)
+	err := hclsimple.DecodeFile(filePath, nil, &got)
 	if err != nil {
 		t.Fatalf("Failed to decode: %s", err)
 	}
+	if !reflect.DeepEqual(&got, wanted) {
+		t.Errorf("Got: %#v\nWanted: %#v", got, wanted)
+	}
+}
 
+func TestParsing(t *testing.T) {
 	wanted := TerraformLock{
 		Providers: []Provider{
 			Provider{
@@ -67,7 +72,18 @@ func TestParsing(t *testing.T) {
 			},
 		},
 	}
-	if !reflect.DeepEqual(got, wanted) {
-		t.Errorf("Got: %#v\nWanted: %#v", got, wanted)
+	checkLock(t, "../../test/data/.terraform.lock.hcl", &wanted)
+}
+
+func TestParsingNoConstraints(t *testing.T) {
+	wanted := TerraformLock{
+		Providers: []Provider{
+			Provider{
+				Address: "registry.terraform.io/datadog/datadog",
+				Version: "3.14.0",
+				Hashes:  []string{"h1:BepDMWe2KLKvFqRqvJxyDDX/bocGAxxMiu6F9g6nElA="},
+			},
+		},
 	}
+	checkLock(t, "../../test/data/hash_1/.terraform.lock.hcl", &wanted)
 }
