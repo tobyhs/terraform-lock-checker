@@ -18,7 +18,7 @@ A container image is pushed to ghcr.io when a release is published.
 
 Example usage of the image:
 ```
-$ docker run --rm -v "${PWD}:/workspace" ghcr.io/tobyhs/terraform-lock-checker:v0.0.1 -exclusion-patterns 'test/data/invalid/*'
+$ docker run --rm -v "${PWD}:/workspace" ghcr.io/tobyhs/terraform-lock-checker:latest -exclusion-patterns 'test/data/invalid/*'
 The following files have an unexpected number of provider checksums:
 test/data/.terraform.lock.hcl
 test/data/hash_4/.terraform.lock.hcl
