@@ -11,8 +11,7 @@ jobs:
     permissions:
       packages: write
     env:
-      IMAGE_URI: ghcr.io/tobyhs/terraform-lock-checker:${{ github.ref_name }}
-      LATEST_IMAGE_URI: ghcr.io/tobyhs/terraform-lock-checker:latest
+      IMAGE_NAME: ghcr.io/tobyhs/terraform-lock-checker
     steps:
       - uses: actions/checkout@v4
       - uses: docker/login-action@v3
@@ -20,10 +19,11 @@ jobs:
           registry: ghcr.io
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      - name: Build Image
-        run: docker build -t "$IMAGE_URI" .
-      - name: Push Image
+      - name: Build and Push Image
         run: |
-          docker tag "$IMAGE_URI" "$LATEST_IMAGE_URI"
-          docker push "$IMAGE_URI"
-          docker push "$LATEST_IMAGE_URI"
+          TAGGED_IMAGE_NAME="${IMAGE_NAME}:$(sed 's/^v//' <<< ${{ github.ref_name }})"
+          LATEST_IMAGE_NAME="${IMAGE_NAME}:latest"
+          docker build -t "$TAGGED_IMAGE_NAME" .
+          docker tag "$TAGGED_IMAGE_NAME" "$LATEST_IMAGE_NAME"
+          docker push "$TAGGED_IMAGE_NAME"
+          docker push "$LATEST_IMAGE_NAME"
